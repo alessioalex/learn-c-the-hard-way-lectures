@@ -23,7 +23,8 @@ struct Person *Person_create(char *name, int age, int height, int weight)
     // returns a copy of name; its memory can be freed later with free()
     // more here: http://stackoverflow.com/questions/252782/strdup-what-does-it-do-in-c
     who->name = strdup(name);
-    who->age = age;
+    (*who).age = age;
+    /* who->age = age; */
     who->height = height;
     who->weight = weight;
 
