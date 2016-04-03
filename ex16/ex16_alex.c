@@ -3,6 +3,7 @@
 // fail to standard error fail if expression != 0
 #include <assert.h>
 // standard library definitions, defines NULL pointer (amongst others)
+// needed for malloc()
 #include <stdlib.h>
 // string operations on null-terminated strings
 // for ex. strdup() - string duplicate

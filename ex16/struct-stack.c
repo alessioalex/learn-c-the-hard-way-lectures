@@ -17,20 +17,28 @@ struct Person {
 
 struct Person Person_create(char *name, int age, int height, int weight)
 {
-    struct Person who;
+    /* struct Person who; */
 
-    int i = 0;
-    char c = ' ';
+    /* int i = 0; */
+    /* char c = ' '; */
 
-    while (c != '\0') {
-        c = name[i];
-        who.name[i] = c;
-        i++;
-    }
+    /* while (c != '\0') { */
+    /*     c = name[i]; */
+    /*     who.name[i] = c; */
+    /*     i++; */
+    /* } */
+    /* who.name = name; */
 
-    who.age = age;
-    who.height = height;
-    who.weight = weight;
+    /* who.age = age; */
+    /* who.height = height; */
+    /* who.weight = weight; */
+
+    struct Person who = {
+        .name = name,
+        .age = age,
+        .height = height,
+        .weight = weight
+    };
 
     return who;
 }
