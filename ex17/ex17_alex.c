@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <assert.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -144,12 +143,18 @@ void Database_set(struct Connection *conn, int id, const char *name, const char 
     //
     // strncpy vs strdup
     // http://stackoverflow.com/a/14021039/617839
-    char *res = strncpy(addr->name, name, MAX_DATA);
-    // demonstrate the strncpy bug
-    if (!res) die("Name copy failed");
+    // good article about strncpy: http://blog.liw.fi/posts/strncpy/
+    strncpy(addr->name, name, MAX_DATA);
 
-    res = strncpy(addr->email, email, MAX_DATA);
-    if (!res) die("Email copy failed");
+    // if (addr->name[MAX_DATA - 1] != '\0')
+    //     die("Problem assigning name");
+    // ... or ....
+
+    addr->name[MAX_DATA - 1] = '\0';
+    // careful, truncation possibly happening here
+
+    strncpy(addr->email, email, MAX_DATA);
+    addr->email[MAX_DATA - 1] = '\0';
 }
 
 void Database_get(struct Connection *conn, int id)
@@ -226,6 +231,58 @@ int main(int argc, char *argv[])
     Database_get(conn, 99);
     Database_close(conn);
     */
+
+    if (argc < 3)
+        die("USAGE: ex17 <dbfile> <action> [action params]");
+
+    char *filename = argv[1];
+    char action = argv[2][0];
+    int id = 0;
+
+    // atoi is bad, mkay? http://rus.har.mn/blog/2014-05-19/strtol-error-checking/
+    if (argc > 3) id = atoi(argv[3]);
+    if (id >= MAX_ROWS) die("There's not that many records.");
+
+    struct Connection *conn = Database_open(filename, action);
+
+    switch (action) {
+        case 'c':
+            Database_create(conn);
+            Database_write(conn);
+            break;
+
+        case 'g':
+            if (argc != 4)
+                die("Need an id to get");
+
+            Database_get(conn, id);
+            break;
+
+        case 's':
+            if (argc != 6)
+                die("Need id, name, email to set");
+
+                Database_set(conn, id, argv[4], argv[5]);
+                Database_write(conn);
+            break;
+
+        case 'd':
+            if (argc != 4)
+                die("Need id to delete");
+
+            Database_delete(conn, id);
+            Database_write(conn);
+            break;
+
+        case 'l':
+            Database_list(conn);
+            break;
+
+        default:
+            break;
+    }
+
+    Database_close(conn);
 
     return 0;
 }
